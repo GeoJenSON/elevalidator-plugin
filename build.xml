@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="elevalidator" default="dist" basedir=".">
+
+    <!-- enter the SVN commit message -->
+    <property name="commit.message" value="Commit message"/>
+    <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
+    <property name="plugin.main.version" value="14945"/>
+
+    <!-- Configure these properties (replace "..." accordingly).
+         See https://josm.openstreetmap.de/wiki/DevelopersGuide/DevelopingPlugins
+    -->
+    <property name="plugin.author" value="GeoJenSON"/>
+    <property name="plugin.class" value="org.openstreetmap.josm.plugins.elevalidator.ElevalidatorPlugin"/>
+    <property name="plugin.description" value="Identify elavators with duplicate ways and tag them automatically correctly according to the Simple Indoor Tagging schema."/>
+    <property name="plugin.icon" value="images/dialogs/elevator.svg"/>
+    <property name="plugin.link" value="Not available"/>
+    <!--<property name="plugin.early" value="..."/>-->
+    <!--<property name="plugin.requires" value="..."/>-->
+    <!--<property name="plugin.stage" value="..."/>-->
+
+    <!-- ** include targets that all plugins have in common ** -->
+    <import file="../build-common.xml"/>
+  
+</project>
