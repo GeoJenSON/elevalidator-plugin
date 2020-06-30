@@ -30,7 +30,7 @@ import javax.swing.tree.TreePath;
 import org.openstreetmap.josm.actions.AbstractSelectAction;
 import org.openstreetmap.josm.actions.AutoScaleAction;
 import org.openstreetmap.josm.actions.JosmAction;
-import org.openstreetmap.josm.actions.ValidateAction;
+//import org.openstreetmap.josm.actions.ValidateAction;
 import org.openstreetmap.josm.actions.relation.EditRelationAction;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.SequenceCommand;
@@ -92,7 +92,7 @@ public class ElevalidatorDialog extends ToggleDialog
     public final ValidatorTreePanel tree;
 
     /** The validate action */
-    public static final ValidateAction validateAction = new ValidateAction();
+    public static final EleValidateAction elevalidateAction = new EleValidateAction();
 
     /** The fix action */
     private final transient Action fixAction;
@@ -161,7 +161,7 @@ public class ElevalidatorDialog extends ToggleDialog
         lookupAction = new LookupAction();
         buttons.add(new SideButton(lookupAction));
 
-        buttons.add(new SideButton(validateAction));
+        buttons.add(new SideButton(elevalidateAction));
 
         fixAction = new AbstractAction() {
             {
@@ -705,7 +705,7 @@ public class ElevalidatorDialog extends ToggleDialog
 
     @Override
     public void processDatasetEvent(AbstractDatasetChangedEvent event) {
-        validateAction.updateEnabledState();
+        elevalidateAction.updateEnabledState();
         lookupAction.updateEnabledState();
     }
 

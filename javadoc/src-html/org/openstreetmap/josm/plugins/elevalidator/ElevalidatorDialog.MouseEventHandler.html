@@ -38,7 +38,7 @@
 <span class="sourceLineNo">030</span>import org.openstreetmap.josm.actions.AbstractSelectAction;<a name="line.30"></a>
 <span class="sourceLineNo">031</span>import org.openstreetmap.josm.actions.AutoScaleAction;<a name="line.31"></a>
 <span class="sourceLineNo">032</span>import org.openstreetmap.josm.actions.JosmAction;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>import org.openstreetmap.josm.actions.ValidateAction;<a name="line.33"></a>
+<span class="sourceLineNo">033</span>//import org.openstreetmap.josm.actions.ValidateAction;<a name="line.33"></a>
 <span class="sourceLineNo">034</span>import org.openstreetmap.josm.actions.relation.EditRelationAction;<a name="line.34"></a>
 <span class="sourceLineNo">035</span>import org.openstreetmap.josm.command.Command;<a name="line.35"></a>
 <span class="sourceLineNo">036</span>import org.openstreetmap.josm.command.SequenceCommand;<a name="line.36"></a>
@@ -100,7 +100,7 @@
 <span class="sourceLineNo">092</span>    public final ValidatorTreePanel tree;<a name="line.92"></a>
 <span class="sourceLineNo">093</span><a name="line.93"></a>
 <span class="sourceLineNo">094</span>    /** The validate action */<a name="line.94"></a>
-<span class="sourceLineNo">095</span>    public static final ValidateAction validateAction = new ValidateAction();<a name="line.95"></a>
+<span class="sourceLineNo">095</span>    public static final EleValidateAction elevalidateAction = new EleValidateAction();<a name="line.95"></a>
 <span class="sourceLineNo">096</span><a name="line.96"></a>
 <span class="sourceLineNo">097</span>    /** The fix action */<a name="line.97"></a>
 <span class="sourceLineNo">098</span>    private final transient Action fixAction;<a name="line.98"></a>
@@ -169,7 +169,7 @@
 <span class="sourceLineNo">161</span>        lookupAction = new LookupAction();<a name="line.161"></a>
 <span class="sourceLineNo">162</span>        buttons.add(new SideButton(lookupAction));<a name="line.162"></a>
 <span class="sourceLineNo">163</span><a name="line.163"></a>
-<span class="sourceLineNo">164</span>        buttons.add(new SideButton(validateAction));<a name="line.164"></a>
+<span class="sourceLineNo">164</span>        buttons.add(new SideButton(elevalidateAction));<a name="line.164"></a>
 <span class="sourceLineNo">165</span><a name="line.165"></a>
 <span class="sourceLineNo">166</span>        fixAction = new AbstractAction() {<a name="line.166"></a>
 <span class="sourceLineNo">167</span>            {<a name="line.167"></a>
@@ -713,7 +713,7 @@
 <span class="sourceLineNo">705</span><a name="line.705"></a>
 <span class="sourceLineNo">706</span>    @Override<a name="line.706"></a>
 <span class="sourceLineNo">707</span>    public void processDatasetEvent(AbstractDatasetChangedEvent event) {<a name="line.707"></a>
-<span class="sourceLineNo">708</span>        validateAction.updateEnabledState();<a name="line.708"></a>
+<span class="sourceLineNo">708</span>        elevalidateAction.updateEnabledState();<a name="line.708"></a>
 <span class="sourceLineNo">709</span>        lookupAction.updateEnabledState();<a name="line.709"></a>
 <span class="sourceLineNo">710</span>    }<a name="line.710"></a>
 <span class="sourceLineNo">711</span><a name="line.711"></a>
