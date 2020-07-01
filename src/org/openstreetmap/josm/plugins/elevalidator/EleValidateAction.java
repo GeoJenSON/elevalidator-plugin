@@ -15,7 +15,10 @@ import org.openstreetmap.josm.actions.JosmAction;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.preferences.sources.ValidatorPrefHelper;
-import org.openstreetmap.josm.data.validation.OsmValidator;
+
+// import should not be needed anymore
+// import org.openstreetmap.josm.data.validation.OsmValidator;
+
 import org.openstreetmap.josm.data.validation.Test;
 import org.openstreetmap.josm.data.validation.TestError;
 import org.openstreetmap.josm.data.validation.util.AggregatePrimitivesVisitor;
@@ -69,9 +72,9 @@ public class EleValidateAction extends JosmAction {
         if (map == null || !map.isVisible())
             return;
 
-        OsmValidator.initializeTests();
+        ElevatorValidator.initializeTests();
 
-        Collection<Test> tests = OsmValidator.getEnabledTests(false);
+        Collection<Test> tests = ElevatorValidator.getEnabledTests(false);
         if (tests.isEmpty())
             return;
 
@@ -148,7 +151,7 @@ public class EleValidateAction extends JosmAction {
                 //FIXME: nicer way to find / invalidate the corresponding error layer
                 MainApplication.getLayerManager().getLayersOfType(ValidatorLayer.class).forEach(ValidatorLayer::invalidate);
                 if (!errors.isEmpty()) {
-                    OsmValidator.initializeErrorLayer();
+                    ElevatorValidator.initializeErrorLayer();
                 }
             });
         }

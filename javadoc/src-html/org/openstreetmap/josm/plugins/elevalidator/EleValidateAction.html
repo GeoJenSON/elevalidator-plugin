@@ -23,178 +23,180 @@
 <span class="sourceLineNo">015</span><a name="line.15"></a>
 <span class="sourceLineNo">016</span>import org.openstreetmap.josm.data.osm.OsmPrimitive;<a name="line.16"></a>
 <span class="sourceLineNo">017</span>import org.openstreetmap.josm.data.preferences.sources.ValidatorPrefHelper;<a name="line.17"></a>
-<span class="sourceLineNo">018</span>import org.openstreetmap.josm.data.validation.OsmValidator;<a name="line.18"></a>
-<span class="sourceLineNo">019</span>import org.openstreetmap.josm.data.validation.Test;<a name="line.19"></a>
-<span class="sourceLineNo">020</span>import org.openstreetmap.josm.data.validation.TestError;<a name="line.20"></a>
-<span class="sourceLineNo">021</span>import org.openstreetmap.josm.data.validation.util.AggregatePrimitivesVisitor;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import org.openstreetmap.josm.gui.MainApplication;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import org.openstreetmap.josm.gui.MainFrame;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import org.openstreetmap.josm.gui.MapFrame;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import org.openstreetmap.josm.gui.PleaseWaitRunnable;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import org.openstreetmap.josm.gui.layer.ValidatorLayer;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import org.openstreetmap.josm.gui.util.GuiHelper;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import org.openstreetmap.josm.io.OsmTransferException;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import org.openstreetmap.josm.tools.Shortcut;<a name="line.29"></a>
-<span class="sourceLineNo">030</span>import org.xml.sax.SAXException;<a name="line.30"></a>
-<span class="sourceLineNo">031</span><a name="line.31"></a>
-<span class="sourceLineNo">032</span>/**<a name="line.32"></a>
-<span class="sourceLineNo">033</span> * The action that does the validate thing.<a name="line.33"></a>
-<span class="sourceLineNo">034</span> * &lt;p&gt;<a name="line.34"></a>
-<span class="sourceLineNo">035</span> * This action iterates through all active tests and give them the data, so that<a name="line.35"></a>
-<span class="sourceLineNo">036</span> * each one can test it.<a name="line.36"></a>
-<span class="sourceLineNo">037</span> *<a name="line.37"></a>
-<span class="sourceLineNo">038</span> * @author frsantos<a name="line.38"></a>
-<span class="sourceLineNo">039</span> */<a name="line.39"></a>
-<span class="sourceLineNo">040</span>public class EleValidateAction extends JosmAction {<a name="line.40"></a>
-<span class="sourceLineNo">041</span><a name="line.41"></a>
-<span class="sourceLineNo">042</span>    /** Last selection used to validate */<a name="line.42"></a>
-<span class="sourceLineNo">043</span>    private transient Collection&lt;OsmPrimitive&gt; lastSelection;<a name="line.43"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>// import should not be needed anymore<a name="line.19"></a>
+<span class="sourceLineNo">020</span>// import org.openstreetmap.josm.data.validation.OsmValidator;<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>import org.openstreetmap.josm.data.validation.Test;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import org.openstreetmap.josm.data.validation.TestError;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import org.openstreetmap.josm.data.validation.util.AggregatePrimitivesVisitor;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import org.openstreetmap.josm.gui.MainApplication;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import org.openstreetmap.josm.gui.MainFrame;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.openstreetmap.josm.gui.MapFrame;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import org.openstreetmap.josm.gui.PleaseWaitRunnable;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import org.openstreetmap.josm.gui.layer.ValidatorLayer;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import org.openstreetmap.josm.gui.util.GuiHelper;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import org.openstreetmap.josm.io.OsmTransferException;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import org.openstreetmap.josm.tools.Shortcut;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import org.xml.sax.SAXException;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>/**<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * The action that does the validate thing.<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * &lt;p&gt;<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * This action iterates through all active tests and give them the data, so that<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * each one can test it.<a name="line.39"></a>
+<span class="sourceLineNo">040</span> *<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * @author frsantos<a name="line.41"></a>
+<span class="sourceLineNo">042</span> */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>public class EleValidateAction extends JosmAction {<a name="line.43"></a>
 <span class="sourceLineNo">044</span><a name="line.44"></a>
-<span class="sourceLineNo">045</span>    /**<a name="line.45"></a>
-<span class="sourceLineNo">046</span>     * Constructor<a name="line.46"></a>
-<span class="sourceLineNo">047</span>     */<a name="line.47"></a>
-<span class="sourceLineNo">048</span>    public EleValidateAction() {<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        super(tr("EleValidation"), "dialogs/validator", tr("Performs the elevator validation"),<a name="line.49"></a>
-<span class="sourceLineNo">050</span>                Shortcut.registerShortcut("tools:validate", tr("Tool: {0}", tr("Validation")),<a name="line.50"></a>
-<span class="sourceLineNo">051</span>                        KeyEvent.VK_V, Shortcut.SHIFT), true);<a name="line.51"></a>
-<span class="sourceLineNo">052</span>    }<a name="line.52"></a>
-<span class="sourceLineNo">053</span><a name="line.53"></a>
-<span class="sourceLineNo">054</span>    @Override<a name="line.54"></a>
-<span class="sourceLineNo">055</span>    public void actionPerformed(ActionEvent ev) {<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        doValidate(true);<a name="line.56"></a>
-<span class="sourceLineNo">057</span>    }<a name="line.57"></a>
-<span class="sourceLineNo">058</span><a name="line.58"></a>
-<span class="sourceLineNo">059</span>    /**<a name="line.59"></a>
-<span class="sourceLineNo">060</span>     * Does the validation.<a name="line.60"></a>
-<span class="sourceLineNo">061</span>     * &lt;p&gt;<a name="line.61"></a>
-<span class="sourceLineNo">062</span>     * If getSelectedItems is true, the selected items (or all items, if no one<a name="line.62"></a>
-<span class="sourceLineNo">063</span>     * is selected) are validated. If it is false, last selected items are revalidated<a name="line.63"></a>
-<span class="sourceLineNo">064</span>     *<a name="line.64"></a>
-<span class="sourceLineNo">065</span>     * @param getSelectedItems If selected or last selected items must be validated<a name="line.65"></a>
-<span class="sourceLineNo">066</span>     */<a name="line.66"></a>
-<span class="sourceLineNo">067</span>    public void doValidate(boolean getSelectedItems) {<a name="line.67"></a>
-<span class="sourceLineNo">068</span>        MapFrame map = MainApplication.getMap();<a name="line.68"></a>
-<span class="sourceLineNo">069</span>        if (map == null || !map.isVisible())<a name="line.69"></a>
-<span class="sourceLineNo">070</span>            return;<a name="line.70"></a>
-<span class="sourceLineNo">071</span><a name="line.71"></a>
-<span class="sourceLineNo">072</span>        OsmValidator.initializeTests();<a name="line.72"></a>
-<span class="sourceLineNo">073</span><a name="line.73"></a>
-<span class="sourceLineNo">074</span>        Collection&lt;Test&gt; tests = OsmValidator.getEnabledTests(false);<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        if (tests.isEmpty())<a name="line.75"></a>
-<span class="sourceLineNo">076</span>            return;<a name="line.76"></a>
-<span class="sourceLineNo">077</span><a name="line.77"></a>
-<span class="sourceLineNo">078</span>        Collection&lt;OsmPrimitive&gt; selection;<a name="line.78"></a>
-<span class="sourceLineNo">079</span>        if (getSelectedItems) {<a name="line.79"></a>
-<span class="sourceLineNo">080</span>            selection = getLayerManager().getActiveDataSet().getAllSelected();<a name="line.80"></a>
-<span class="sourceLineNo">081</span>            if (selection.isEmpty()) {<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                selection = getLayerManager().getActiveDataSet().allNonDeletedPrimitives();<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                lastSelection = null;<a name="line.83"></a>
-<span class="sourceLineNo">084</span>            } else {<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                AggregatePrimitivesVisitor v = new AggregatePrimitivesVisitor();<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                selection = v.visit(selection);<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                lastSelection = selection;<a name="line.87"></a>
-<span class="sourceLineNo">088</span>            }<a name="line.88"></a>
-<span class="sourceLineNo">089</span>        } else {<a name="line.89"></a>
-<span class="sourceLineNo">090</span>            selection = Optional.ofNullable(lastSelection).orElseGet(<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                    () -&gt; getLayerManager().getActiveDataSet().allNonDeletedPrimitives());<a name="line.91"></a>
-<span class="sourceLineNo">092</span>        }<a name="line.92"></a>
-<span class="sourceLineNo">093</span><a name="line.93"></a>
-<span class="sourceLineNo">094</span>        MainApplication.worker.submit(new ValidationTask(tests, selection, lastSelection));<a name="line.94"></a>
-<span class="sourceLineNo">095</span>    }<a name="line.95"></a>
+<span class="sourceLineNo">045</span>    /** Last selection used to validate */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>    private transient Collection&lt;OsmPrimitive&gt; lastSelection;<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>    /**<a name="line.48"></a>
+<span class="sourceLineNo">049</span>     * Constructor<a name="line.49"></a>
+<span class="sourceLineNo">050</span>     */<a name="line.50"></a>
+<span class="sourceLineNo">051</span>    public EleValidateAction() {<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        super(tr("EleValidation"), "dialogs/validator", tr("Performs the elevator validation"),<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                Shortcut.registerShortcut("tools:validate", tr("Tool: {0}", tr("Validation")),<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                        KeyEvent.VK_V, Shortcut.SHIFT), true);<a name="line.54"></a>
+<span class="sourceLineNo">055</span>    }<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>    @Override<a name="line.57"></a>
+<span class="sourceLineNo">058</span>    public void actionPerformed(ActionEvent ev) {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        doValidate(true);<a name="line.59"></a>
+<span class="sourceLineNo">060</span>    }<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>    /**<a name="line.62"></a>
+<span class="sourceLineNo">063</span>     * Does the validation.<a name="line.63"></a>
+<span class="sourceLineNo">064</span>     * &lt;p&gt;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>     * If getSelectedItems is true, the selected items (or all items, if no one<a name="line.65"></a>
+<span class="sourceLineNo">066</span>     * is selected) are validated. If it is false, last selected items are revalidated<a name="line.66"></a>
+<span class="sourceLineNo">067</span>     *<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     * @param getSelectedItems If selected or last selected items must be validated<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     */<a name="line.69"></a>
+<span class="sourceLineNo">070</span>    public void doValidate(boolean getSelectedItems) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        MapFrame map = MainApplication.getMap();<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        if (map == null || !map.isVisible())<a name="line.72"></a>
+<span class="sourceLineNo">073</span>            return;<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>        ElevatorValidator.initializeTests();<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>        Collection&lt;Test&gt; tests = ElevatorValidator.getEnabledTests(false);<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        if (tests.isEmpty())<a name="line.78"></a>
+<span class="sourceLineNo">079</span>            return;<a name="line.79"></a>
+<span class="sourceLineNo">080</span><a name="line.80"></a>
+<span class="sourceLineNo">081</span>        Collection&lt;OsmPrimitive&gt; selection;<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        if (getSelectedItems) {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>            selection = getLayerManager().getActiveDataSet().getAllSelected();<a name="line.83"></a>
+<span class="sourceLineNo">084</span>            if (selection.isEmpty()) {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                selection = getLayerManager().getActiveDataSet().allNonDeletedPrimitives();<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                lastSelection = null;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>            } else {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                AggregatePrimitivesVisitor v = new AggregatePrimitivesVisitor();<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                selection = v.visit(selection);<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                lastSelection = selection;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>            }<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        } else {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>            selection = Optional.ofNullable(lastSelection).orElseGet(<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                    () -&gt; getLayerManager().getActiveDataSet().allNonDeletedPrimitives());<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        }<a name="line.95"></a>
 <span class="sourceLineNo">096</span><a name="line.96"></a>
-<span class="sourceLineNo">097</span>    @Override<a name="line.97"></a>
-<span class="sourceLineNo">098</span>    public void updateEnabledState() {<a name="line.98"></a>
-<span class="sourceLineNo">099</span>        setEnabled(getLayerManager().getActiveDataSet() != null);<a name="line.99"></a>
-<span class="sourceLineNo">100</span>    }<a name="line.100"></a>
-<span class="sourceLineNo">101</span><a name="line.101"></a>
-<span class="sourceLineNo">102</span>    @Override<a name="line.102"></a>
-<span class="sourceLineNo">103</span>    public void destroy() {<a name="line.103"></a>
-<span class="sourceLineNo">104</span>        // Hack - this action should stay forever because it could be added to toolbar<a name="line.104"></a>
-<span class="sourceLineNo">105</span>        // Do not call super.destroy() here<a name="line.105"></a>
-<span class="sourceLineNo">106</span>        lastSelection = null;<a name="line.106"></a>
-<span class="sourceLineNo">107</span>    }<a name="line.107"></a>
-<span class="sourceLineNo">108</span><a name="line.108"></a>
-<span class="sourceLineNo">109</span>    /**<a name="line.109"></a>
-<span class="sourceLineNo">110</span>     * Asynchronous task for running a collection of tests against a collection of primitives<a name="line.110"></a>
-<span class="sourceLineNo">111</span>     */<a name="line.111"></a>
-<span class="sourceLineNo">112</span>    static class ValidationTask extends PleaseWaitRunnable {<a name="line.112"></a>
-<span class="sourceLineNo">113</span>        private Collection&lt;Test&gt; tests;<a name="line.113"></a>
-<span class="sourceLineNo">114</span>        private final Collection&lt;OsmPrimitive&gt; validatedPrimitives;<a name="line.114"></a>
-<span class="sourceLineNo">115</span>        private final Collection&lt;OsmPrimitive&gt; formerValidatedPrimitives;<a name="line.115"></a>
-<span class="sourceLineNo">116</span>        private boolean canceled;<a name="line.116"></a>
-<span class="sourceLineNo">117</span>        private List&lt;TestError&gt; errors;<a name="line.117"></a>
-<span class="sourceLineNo">118</span><a name="line.118"></a>
-<span class="sourceLineNo">119</span>        /**<a name="line.119"></a>
-<span class="sourceLineNo">120</span>         * Constructs a new {@code ValidationTask}<a name="line.120"></a>
-<span class="sourceLineNo">121</span>         * @param tests  the tests to run<a name="line.121"></a>
-<span class="sourceLineNo">122</span>         * @param validatedPrimitives the collection of primitives to validate.<a name="line.122"></a>
-<span class="sourceLineNo">123</span>         * @param formerValidatedPrimitives the last collection of primitives being validates. May be null.<a name="line.123"></a>
-<span class="sourceLineNo">124</span>         */<a name="line.124"></a>
-<span class="sourceLineNo">125</span>        ValidationTask(Collection&lt;Test&gt; tests, Collection&lt;OsmPrimitive&gt; validatedPrimitives,<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                       Collection&lt;OsmPrimitive&gt; formerValidatedPrimitives) {<a name="line.126"></a>
-<span class="sourceLineNo">127</span>            super(tr("Validating"), false /*don't ignore exceptions */);<a name="line.127"></a>
-<span class="sourceLineNo">128</span>            this.validatedPrimitives = validatedPrimitives;<a name="line.128"></a>
-<span class="sourceLineNo">129</span>            this.formerValidatedPrimitives = formerValidatedPrimitives;<a name="line.129"></a>
-<span class="sourceLineNo">130</span>            this.tests = tests;<a name="line.130"></a>
-<span class="sourceLineNo">131</span>        }<a name="line.131"></a>
-<span class="sourceLineNo">132</span><a name="line.132"></a>
-<span class="sourceLineNo">133</span>        @Override<a name="line.133"></a>
-<span class="sourceLineNo">134</span>        protected void cancel() {<a name="line.134"></a>
-<span class="sourceLineNo">135</span>            this.canceled = true;<a name="line.135"></a>
-<span class="sourceLineNo">136</span>        }<a name="line.136"></a>
-<span class="sourceLineNo">137</span><a name="line.137"></a>
-<span class="sourceLineNo">138</span>        @Override<a name="line.138"></a>
-<span class="sourceLineNo">139</span>        protected void finish() {<a name="line.139"></a>
-<span class="sourceLineNo">140</span>            if (canceled) return;<a name="line.140"></a>
-<span class="sourceLineNo">141</span><a name="line.141"></a>
-<span class="sourceLineNo">142</span>            // update GUI on Swing EDT<a name="line.142"></a>
-<span class="sourceLineNo">143</span>            //<a name="line.143"></a>
-<span class="sourceLineNo">144</span>            GuiHelper.runInEDT(() -&gt; {<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                MapFrame map = MainApplication.getMap();<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                ElevalidatorDialog elevalidatorDialog = ElevalidatorPlugin.getElevalidatorDialog();<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                elevalidatorDialog.unfurlDialog();<a name="line.147"></a>
-<span class="sourceLineNo">148</span>                elevalidatorDialog.tree.setErrors(errors);<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                //FIXME: nicer way to find / invalidate the corresponding error layer<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                MainApplication.getLayerManager().getLayersOfType(ValidatorLayer.class).forEach(ValidatorLayer::invalidate);<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                if (!errors.isEmpty()) {<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                    OsmValidator.initializeErrorLayer();<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                }<a name="line.153"></a>
-<span class="sourceLineNo">154</span>            });<a name="line.154"></a>
-<span class="sourceLineNo">155</span>        }<a name="line.155"></a>
-<span class="sourceLineNo">156</span><a name="line.156"></a>
-<span class="sourceLineNo">157</span>        @Override<a name="line.157"></a>
-<span class="sourceLineNo">158</span>        protected void realRun() throws SAXException, IOException,<a name="line.158"></a>
-<span class="sourceLineNo">159</span>                OsmTransferException {<a name="line.159"></a>
-<span class="sourceLineNo">160</span>            if (tests == null || tests.isEmpty())<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                return;<a name="line.161"></a>
-<span class="sourceLineNo">162</span>            errors = new ArrayList&lt;&gt;();<a name="line.162"></a>
-<span class="sourceLineNo">163</span>            getProgressMonitor().setTicksCount(tests.size() * validatedPrimitives.size());<a name="line.163"></a>
-<span class="sourceLineNo">164</span>            int testCounter = 0;<a name="line.164"></a>
-<span class="sourceLineNo">165</span>            for (Test test : tests) {<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                if (canceled)<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                    return;<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                testCounter++;<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                getProgressMonitor().setCustomText(tr("Test {0}/{1}: Starting {2}", testCounter, tests.size(), test.getName()));<a name="line.169"></a>
-<span class="sourceLineNo">170</span>                test.setBeforeUpload(false);<a name="line.170"></a>
-<span class="sourceLineNo">171</span>                test.setPartialSelection(formerValidatedPrimitives != null);<a name="line.171"></a>
-<span class="sourceLineNo">172</span>                test.startTest(getProgressMonitor().createSubTaskMonitor(validatedPrimitives.size(), false));<a name="line.172"></a>
-<span class="sourceLineNo">173</span>                test.visit(validatedPrimitives);<a name="line.173"></a>
-<span class="sourceLineNo">174</span>                test.endTest();<a name="line.174"></a>
-<span class="sourceLineNo">175</span>                errors.addAll(test.getErrors());<a name="line.175"></a>
-<span class="sourceLineNo">176</span>                test.clear();<a name="line.176"></a>
-<span class="sourceLineNo">177</span>            }<a name="line.177"></a>
-<span class="sourceLineNo">178</span>            tests = null;<a name="line.178"></a>
-<span class="sourceLineNo">179</span>            if (Boolean.TRUE.equals(ValidatorPrefHelper.PREF_USE_IGNORE.get())) {<a name="line.179"></a>
-<span class="sourceLineNo">180</span>                getProgressMonitor().setCustomText("");<a name="line.180"></a>
-<span class="sourceLineNo">181</span>                getProgressMonitor().subTask(tr("Updating ignored errors ..."));<a name="line.181"></a>
-<span class="sourceLineNo">182</span>                for (TestError error : errors) {<a name="line.182"></a>
-<span class="sourceLineNo">183</span>                    if (canceled) return;<a name="line.183"></a>
-<span class="sourceLineNo">184</span>                    error.updateIgnored();<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                }<a name="line.185"></a>
-<span class="sourceLineNo">186</span>            }<a name="line.186"></a>
-<span class="sourceLineNo">187</span>        }<a name="line.187"></a>
-<span class="sourceLineNo">188</span>    }<a name="line.188"></a>
-<span class="sourceLineNo">189</span>}<a name="line.189"></a>
+<span class="sourceLineNo">097</span>        MainApplication.worker.submit(new ValidationTask(tests, selection, lastSelection));<a name="line.97"></a>
+<span class="sourceLineNo">098</span>    }<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>    @Override<a name="line.100"></a>
+<span class="sourceLineNo">101</span>    public void updateEnabledState() {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        setEnabled(getLayerManager().getActiveDataSet() != null);<a name="line.102"></a>
+<span class="sourceLineNo">103</span>    }<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>    @Override<a name="line.105"></a>
+<span class="sourceLineNo">106</span>    public void destroy() {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        // Hack - this action should stay forever because it could be added to toolbar<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        // Do not call super.destroy() here<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        lastSelection = null;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>    }<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>    /**<a name="line.112"></a>
+<span class="sourceLineNo">113</span>     * Asynchronous task for running a collection of tests against a collection of primitives<a name="line.113"></a>
+<span class="sourceLineNo">114</span>     */<a name="line.114"></a>
+<span class="sourceLineNo">115</span>    static class ValidationTask extends PleaseWaitRunnable {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        private Collection&lt;Test&gt; tests;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        private final Collection&lt;OsmPrimitive&gt; validatedPrimitives;<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        private final Collection&lt;OsmPrimitive&gt; formerValidatedPrimitives;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        private boolean canceled;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        private List&lt;TestError&gt; errors;<a name="line.120"></a>
+<span class="sourceLineNo">121</span><a name="line.121"></a>
+<span class="sourceLineNo">122</span>        /**<a name="line.122"></a>
+<span class="sourceLineNo">123</span>         * Constructs a new {@code ValidationTask}<a name="line.123"></a>
+<span class="sourceLineNo">124</span>         * @param tests  the tests to run<a name="line.124"></a>
+<span class="sourceLineNo">125</span>         * @param validatedPrimitives the collection of primitives to validate.<a name="line.125"></a>
+<span class="sourceLineNo">126</span>         * @param formerValidatedPrimitives the last collection of primitives being validates. May be null.<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         */<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        ValidationTask(Collection&lt;Test&gt; tests, Collection&lt;OsmPrimitive&gt; validatedPrimitives,<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                       Collection&lt;OsmPrimitive&gt; formerValidatedPrimitives) {<a name="line.129"></a>
+<span class="sourceLineNo">130</span>            super(tr("Validating"), false /*don't ignore exceptions */);<a name="line.130"></a>
+<span class="sourceLineNo">131</span>            this.validatedPrimitives = validatedPrimitives;<a name="line.131"></a>
+<span class="sourceLineNo">132</span>            this.formerValidatedPrimitives = formerValidatedPrimitives;<a name="line.132"></a>
+<span class="sourceLineNo">133</span>            this.tests = tests;<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        }<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>        @Override<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        protected void cancel() {<a name="line.137"></a>
+<span class="sourceLineNo">138</span>            this.canceled = true;<a name="line.138"></a>
+<span class="sourceLineNo">139</span>        }<a name="line.139"></a>
+<span class="sourceLineNo">140</span><a name="line.140"></a>
+<span class="sourceLineNo">141</span>        @Override<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        protected void finish() {<a name="line.142"></a>
+<span class="sourceLineNo">143</span>            if (canceled) return;<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>            // update GUI on Swing EDT<a name="line.145"></a>
+<span class="sourceLineNo">146</span>            //<a name="line.146"></a>
+<span class="sourceLineNo">147</span>            GuiHelper.runInEDT(() -&gt; {<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                ElevalidatorDialog elevalidatorDialog = ElevalidatorPlugin.getElevalidatorDialog();<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                elevalidatorDialog.unfurlDialog();<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                elevalidatorDialog.tree.setErrors(errors);<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                //FIXME: nicer way to find / invalidate the corresponding error layer<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                MainApplication.getLayerManager().getLayersOfType(ValidatorLayer.class).forEach(ValidatorLayer::invalidate);<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                if (!errors.isEmpty()) {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                    ElevatorValidator.initializeErrorLayer();<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                }<a name="line.155"></a>
+<span class="sourceLineNo">156</span>            });<a name="line.156"></a>
+<span class="sourceLineNo">157</span>        }<a name="line.157"></a>
+<span class="sourceLineNo">158</span><a name="line.158"></a>
+<span class="sourceLineNo">159</span>        @Override<a name="line.159"></a>
+<span class="sourceLineNo">160</span>        protected void realRun() throws SAXException, IOException,<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                OsmTransferException {<a name="line.161"></a>
+<span class="sourceLineNo">162</span>            if (tests == null || tests.isEmpty())<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                return;<a name="line.163"></a>
+<span class="sourceLineNo">164</span>            errors = new ArrayList&lt;&gt;();<a name="line.164"></a>
+<span class="sourceLineNo">165</span>            getProgressMonitor().setTicksCount(tests.size() * validatedPrimitives.size());<a name="line.165"></a>
+<span class="sourceLineNo">166</span>            int testCounter = 0;<a name="line.166"></a>
+<span class="sourceLineNo">167</span>            for (Test test : tests) {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                if (canceled)<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                    return;<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                testCounter++;<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                getProgressMonitor().setCustomText(tr("Test {0}/{1}: Starting {2}", testCounter, tests.size(), test.getName()));<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                test.setBeforeUpload(false);<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                test.setPartialSelection(formerValidatedPrimitives != null);<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                test.startTest(getProgressMonitor().createSubTaskMonitor(validatedPrimitives.size(), false));<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                test.visit(validatedPrimitives);<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                test.endTest();<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                errors.addAll(test.getErrors());<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                test.clear();<a name="line.178"></a>
+<span class="sourceLineNo">179</span>            }<a name="line.179"></a>
+<span class="sourceLineNo">180</span>            tests = null;<a name="line.180"></a>
+<span class="sourceLineNo">181</span>            if (Boolean.TRUE.equals(ValidatorPrefHelper.PREF_USE_IGNORE.get())) {<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                getProgressMonitor().setCustomText("");<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                getProgressMonitor().subTask(tr("Updating ignored errors ..."));<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                for (TestError error : errors) {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                    if (canceled) return;<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                    error.updateIgnored();<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                }<a name="line.187"></a>
+<span class="sourceLineNo">188</span>            }<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        }<a name="line.189"></a>
+<span class="sourceLineNo">190</span>    }<a name="line.190"></a>
+<span class="sourceLineNo">191</span>}<a name="line.191"></a>
 
 
 
