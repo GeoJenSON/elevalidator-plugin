@@ -16,6 +16,7 @@ import java.util.stream.IntStream;
 
 import org.openstreetmap.josm.command.ChangeCommand;
 import org.openstreetmap.josm.command.Command;
+import org.openstreetmap.josm.command.ChangePropertyCommand;
 import org.openstreetmap.josm.command.DeleteCommand;
 import org.openstreetmap.josm.command.SequenceCommand;
 import org.openstreetmap.josm.data.coor.LatLon;
@@ -90,9 +91,9 @@ public class DuplicateElevator extends Test {
     }
 
     /** Test identification for exactly identical ways (coordinates and tags). */
-    protected static final int DUPLICATE_WAY = 1401;
+    protected static final int DUPLICATE_ELEVATOR = 1401;
     /** Test identification for identical ways (coordinates only). */
-    protected static final int SAME_WAY = 1402;
+    protected static final int SAME_ELEVATOR = 1402;
 
     /** Bag of all ways */
     private MultiMap<WayPair, OsmPrimitive> ways;
@@ -108,7 +109,7 @@ public class DuplicateElevator extends Test {
      */
     public DuplicateElevator() {
         super(tr("Duplicated elevators"),
-                tr("This test checks that there are no elevators with same node coordinates and optionally also same tags."));
+                tr("This test checks that there are no elevators with same node coordinates and different level tags."));
     }
 
     @Override
@@ -124,7 +125,7 @@ public class DuplicateElevator extends Test {
         super.endTest();
         for (Set<OsmPrimitive> duplicated : ways.values()) {
             if (duplicated.size() > 1) {
-                TestError testError = TestError.builder(this, Severity.ERROR, DUPLICATE_WAY)
+                TestError testError = TestError.builder(this, Severity.ERROR, DUPLICATE_ELEVATOR)
                         .message(tr("Duplicated elevators"))
                         .primitives(duplicated)
                         .build();
@@ -154,7 +155,7 @@ public class DuplicateElevator extends Test {
                 if (skip) {
                     continue;
                 }
-                TestError testError = TestError.builder(this, Severity.WARNING, SAME_WAY)
+                TestError testError = TestError.builder(this, Severity.WARNING, SAME_ELEVATOR)
                         .message(tr("Elevators with same position"))
                         .primitives(sameway)
                         .build();
@@ -197,12 +198,21 @@ public class DuplicateElevator extends Test {
                 }
             }
         }
-        Map<String, String> wkeys = w.getKeys();
-        removeUninterestingKeys(wkeys);
-        WayPair wKey = new WayPair(wLat, wkeys);
-        ways.put(wKey, w);
-        WayPairNoTags wKeyN = new WayPairNoTags(wLat);
-        waysNoTags.put(wKeyN, w);
+        // Check if the way has the highway=elevator tag
+        if (w.hasTag("highway","elevator")) {
+
+            Map<String, String> wkeys = w.getKeys();
+            removeUninterestingKeys(wkeys);
+            WayPair wKey = new WayPair(wLat, wkeys);
+            ways.put(wKey, w);
+            WayPairNoTags wKeyN = new WayPairNoTags(wLat);
+            waysNoTags.put(wKeyN, w);
+        }
+
+        else {
+            return;
+        }
+
     }
 
     /**
@@ -260,7 +270,14 @@ public class DuplicateElevator extends Test {
         // Find the way that is member of one or more relations. (If any)
         Way wayWithRelations = null;
         List<Relation> relations = null;
+        String newLevelsTag = "";
         for (Way w : wayz) {
+            // --- own code to store the level tag ---
+            Map<String, String> elevatorKeys = w.getKeys();
+            String elevatorLevel = elevatorKeys.get("level");
+            newLevelsTag += elevatorLevel + ";";
+            System.out.println(newLevelsTag);
+            // ---------------------------------------
             List<Relation> rel = w.referrers(Relation.class).collect(Collectors.toList());
             if (!rel.isEmpty()) {
                 if (wayWithRelations != null)
@@ -292,6 +309,9 @@ public class DuplicateElevator extends Test {
             }
         }
 
+        // Set the level values for remaining elevator
+        commands.add(new ChangePropertyCommand(wayToKeep, "level", newLevelsTag));
+
         // Delete all ways in the list
         // Note: nodes are not deleted, these can be detected and deleted at next pass
         wayz.remove(wayToKeep);
@@ -304,8 +324,8 @@ public class DuplicateElevator extends Test {
         if (!(testError.getTester() instanceof DuplicateElevator))
             return false;
 
-        // Do not automatically fix same ways with different tags
-        if (testError.getCode() != DUPLICATE_WAY) return false;
+        // Do not automatically fix same ways with different tags --> next line as comment since we also want to fix same position elevators
+        //if (testError.getCode() != DUPLICATE_ELEVATOR) return false;
 
         // We fix it only if there is no more than one way that is relation member.
         Set<Way> wayz = testError.primitives(Way.class).collect(Collectors.toSet());
