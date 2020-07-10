@@ -30,7 +30,6 @@ import javax.swing.tree.TreePath;
 import org.openstreetmap.josm.actions.AbstractSelectAction;
 import org.openstreetmap.josm.actions.AutoScaleAction;
 import org.openstreetmap.josm.actions.JosmAction;
-//import org.openstreetmap.josm.actions.ValidateAction;
 import org.openstreetmap.josm.actions.relation.EditRelationAction;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.SequenceCommand;
@@ -53,7 +52,7 @@ import org.openstreetmap.josm.data.validation.Severity;
 import org.openstreetmap.josm.data.validation.TestError;
 import org.openstreetmap.josm.data.validation.ValidatorVisitor;
 
-//these two needed to be added to standard imports of ValidatorDialog
+// new imports compared to original ValidatorDialog.class
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.gui.dialogs.ValidatorListManagementDialog;
 
@@ -81,9 +80,8 @@ import org.xml.sax.SAXException;
 
 /**
  * A small tool dialog for displaying the current errors. The selection manager
- * respects clicks into the selection list. Ctrl-click will remove entries from
- * the list while single click will make the clicked entry the only selection.
- *
+ * respects clicks into the selection list. Single click will make the clicked
+ * entry the only selection.
  */
 public class ElevalidatorDialog extends ToggleDialog
         implements DataSelectionListener, ActiveLayerChangeListener, DataSetListenerAdapter.Listener {
@@ -126,6 +124,7 @@ public class ElevalidatorDialog extends ToggleDialog
         addTreeSelectionListener(new SelectionWatch());
         InputMapUtils.unassignCtrlShiftUpDown(tree, JComponent.WHEN_FOCUSED);
 
+        // the ignoreAction is not used in this plugin
         ignoreForNowAction = new JosmAction(tr("Ignore for now"), "dialogs/delete",
                 tr("Ignore and remove from tree."), Shortcut.registerShortcut("tools:validate:ignore-for-now",
                 tr("Ignore and remove from tree."), KeyEvent.VK_MINUS, Shortcut.SHIFT),
@@ -141,10 +140,6 @@ public class ElevalidatorDialog extends ToggleDialog
                 }
             }
         };
-
-        /*popupMenuHandler.addAction(MainApplication.getMenu().autoScaleActions.get("problem"));
-        popupMenuHandler.addAction(new EditRelationAction());
-        popupMenuHandler.addAction(ignoreForNowAction);*/
 
         List<SideButton> buttons = new LinkedList<>();
 

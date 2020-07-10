@@ -80,15 +80,13 @@ import org.openstreetmap.josm.tools.AlphanumComparator;
 import org.openstreetmap.josm.tools.Logging;
 import org.openstreetmap.josm.tools.Stopwatch;
 
-// New imports since package changed
+// New imports since package changed compared to original OsmValidator.java
 import org.openstreetmap.josm.data.validation.Test;
 import org.openstreetmap.josm.data.validation.TestError;
 import org.openstreetmap.josm.data.validation.Severity;
 
 /**
  * A OSM data validator.
- *
- * @author Francisco R. Santos &lt;frsantos@gmail.com&gt;
  */
 public final class ElevatorValidator {
 
@@ -114,7 +112,7 @@ public final class ElevatorValidator {
     @SuppressWarnings("unchecked")
     private static final Class<Test>[] CORE_TEST_CLASSES = new Class[] {// NOPMD
             /* FIXME - unique error numbers for tests aren't properly unique - ignoring will not work as expected */
-            //DuplicateWay.class, // ID 1401 .. 1499
+            //DuplicateElevator should be the only test that is gonna be initialized
             DuplicateElevator.class
     };
 

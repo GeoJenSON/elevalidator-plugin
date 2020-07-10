@@ -1,11 +1,15 @@
 README 
 ======
 
-Readme for your plugin 
+JOSM-Plugin Elevator Validation
+=============================== 
 
-    * Plugin author and contact email address.
-    
-    * The license for your plugin source code. If you have no special preferences, 
-      you can pick the license that is used for JOSM ("GPL v2 or later").
-      
-    * Notes for future developers, if needed.
+ * This plugin for the Java OpenstreetMap editor was developed to automatically identify and remove
+   duplicate elevator highways with different level tags. All duplicate elevator highways except
+   one are removed. The remaining elevator object receives a new level tag that includes all the
+   levels of the removed elevator objects. Thus the regarding elevators are tagged correctly
+   according to the Simple Indoor Tagging Schema.
+
+ * All the main classes of the plugin are modified versions of the corresponding classes of the original JOSM Validator tool.
+
+ * Please note: This plugin is highly experimental and at the moment it only works properly in specific situations.

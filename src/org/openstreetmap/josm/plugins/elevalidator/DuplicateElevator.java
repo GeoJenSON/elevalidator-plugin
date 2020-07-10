@@ -254,7 +254,7 @@ public class DuplicateElevator extends Test {
     }
 
     /**
-     * Fix the error by removing all but one instance of duplicate ways
+     * Fix the error by removing all but one instance of duplicate elevator highways
      */
     @Override
     public Command fixError(TestError testError) {
@@ -279,7 +279,6 @@ public class DuplicateElevator extends Test {
             String elevatorLevel = elevatorKeys.get("level");
 
             elevatorLevels.add(elevatorLevel);
-            System.out.println(elevatorLevels);
             // ---------------------------------------
             List<Relation> rel = w.referrers(Relation.class).collect(Collectors.toList());
             if (!rel.isEmpty()) {

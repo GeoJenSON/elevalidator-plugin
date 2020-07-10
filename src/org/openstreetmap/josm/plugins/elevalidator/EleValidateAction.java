@@ -10,14 +10,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-// this import import is now necessary since package changed
+ /**
+  * this import import is now necessary since package changed
+  * compared to original ValidateAction.class
+  */
+
 import org.openstreetmap.josm.actions.JosmAction;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.preferences.sources.ValidatorPrefHelper;
-
-// import should not be needed anymore
-// import org.openstreetmap.josm.data.validation.OsmValidator;
 
 import org.openstreetmap.josm.data.validation.Test;
 import org.openstreetmap.josm.data.validation.TestError;
@@ -37,8 +38,6 @@ import org.xml.sax.SAXException;
  * <p>
  * This action iterates through all active tests and give them the data, so that
  * each one can test it.
- *
- * @author frsantos
  */
 public class EleValidateAction extends JosmAction {
 

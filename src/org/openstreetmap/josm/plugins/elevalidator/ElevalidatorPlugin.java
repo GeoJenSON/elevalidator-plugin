@@ -29,7 +29,6 @@ public class ElevalidatorPlugin extends Plugin {
 
         if (oldFrame == null && newFrame != null) {
             newFrame.addToggleDialog(elevalidatorDialog);
-            System.out.println("Test logging");
         }
     }
 }
