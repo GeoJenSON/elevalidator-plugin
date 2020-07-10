@@ -142,9 +142,9 @@ public class ElevalidatorDialog extends ToggleDialog
             }
         };
 
-        popupMenuHandler.addAction(MainApplication.getMenu().autoScaleActions.get("problem"));
+        /*popupMenuHandler.addAction(MainApplication.getMenu().autoScaleActions.get("problem"));
         popupMenuHandler.addAction(new EditRelationAction());
-        popupMenuHandler.addAction(ignoreForNowAction);
+        popupMenuHandler.addAction(ignoreForNowAction);*/
 
         List<SideButton> buttons = new LinkedList<>();
 

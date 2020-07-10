@@ -271,12 +271,15 @@ public class DuplicateElevator extends Test {
         Way wayWithRelations = null;
         List<Relation> relations = null;
         String newLevelsTag = "";
+        StringBuffer sb = new StringBuffer();
+        ArrayList<String> elevatorLevels = new ArrayList<String>();
         for (Way w : wayz) {
             // --- own code to store the level tag ---
             Map<String, String> elevatorKeys = w.getKeys();
             String elevatorLevel = elevatorKeys.get("level");
-            newLevelsTag += elevatorLevel + ";";
-            System.out.println(newLevelsTag);
+
+            elevatorLevels.add(elevatorLevel);
+            System.out.println(elevatorLevels);
             // ---------------------------------------
             List<Relation> rel = w.referrers(Relation.class).collect(Collectors.toList());
             if (!rel.isEmpty()) {
@@ -308,6 +311,25 @@ public class DuplicateElevator extends Test {
                 commands.add(new ChangeCommand(rel, newRel));
             }
         }
+
+        //Order the level ArrayList
+        Collections.sort(elevatorLevels);
+
+
+        //Add ArrayList elements to StringBuffer element
+        for (String s : elevatorLevels) {
+            if (elevatorLevels.indexOf(s) == (elevatorLevels.size() -1)) {
+                sb.append(s);
+            }
+            else {
+                sb.append(s);
+                sb.append(";");
+            }
+
+        }
+
+        //Convert StringBuffer to String
+        newLevelsTag = sb.toString();
 
         // Set the level values for remaining elevator
         commands.add(new ChangePropertyCommand(wayToKeep, "level", newLevelsTag));
